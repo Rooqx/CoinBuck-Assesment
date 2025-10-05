@@ -121,7 +121,8 @@ GET "https://coinbuck-assesment.onrender.com/api/v1/logs?level=error&page=1&limi
   ```json
   {
     "amount": 0.001,
-    "cryptoType": "BTC"
+    "cryptoType": "BTC",
+    "bank": "UBA"
   }
   ```
 - **Auth Required:** Yes (via cookies or `Authorization` header)
