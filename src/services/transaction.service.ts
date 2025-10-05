@@ -31,8 +31,10 @@ export class TransactionService {
 
     //  Calculate conversion and prepare data
     const nairaAmount = await calculateRate(amount, cryptoType);
-    const format = formatCurrency(nairaAmount);
-    const transactionId = generateTransactionId();
+
+    const format = formatCurrency(nairaAmount); //Format teh amount some like ₦7,500.00
+
+    const transactionId = generateTransactionId(); // Generate a unique id for the transaction
 
     //  Create transaction first (outside session)
     // This ensures we always have a record even if something fails later
@@ -43,9 +45,22 @@ export class TransactionService {
       amountInCrypto: amount,
       currencyFormat: format,
       amountInNaira: nairaAmount,
+      status: "PENDING", //Eventually gets updated to either SUCCESS OR FAILED
+    });
+    if (!transaction) {
+      throw new AppError("Failed to create transaction", 500);
+    }
+    //log transaction
+    logger.info("New Transaction Processing", {
+      id: transaction._id,
+      userId: userId,
+      transactionId: transactionId,
+      cryptoType: cryptoType,
+      amountInCrypto: amount,
+      currencyFormat: format,
+      amountInNaira: nairaAmount,
       status: "PENDING",
     });
-
     //  Start a session for wallet balance updates
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -67,7 +82,10 @@ export class TransactionService {
 
       //  Log success
       logger.info("Transaction processed successfully", {
-        cryptoType,
+        id: transaction._id,
+        userId: userId,
+        transactionId: transactionId,
+        cryptoType: cryptoType,
         amountInCrypto: amount,
         currencyFormat: format,
         amountInNaira: nairaAmount,
@@ -91,7 +109,10 @@ export class TransactionService {
       //  Log the failed transaction
       logger.error("Transaction failed", {
         error: err.message,
-        cryptoType,
+        id: transaction._id,
+        userId: userId,
+        transactionId: transactionId,
+        cryptoType: cryptoType,
         amountInCrypto: amount,
         currencyFormat: format,
         amountInNaira: nairaAmount,

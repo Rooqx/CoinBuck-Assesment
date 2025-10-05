@@ -38,7 +38,7 @@ app.get("/", (_req, res) => {
 console.log(MONGO_URI);
 
 app.listen(PORT, async () => {
-  console.log(`✅ Server running at http://localhost:${PORT}`);
+  console.log(`✅Server running at http://localhost:${PORT}`);
   await connectToMongo();
   //await connectToRedis();
   console.log(`Environment:${ENV}`);

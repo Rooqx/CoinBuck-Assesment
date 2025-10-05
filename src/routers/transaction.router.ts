@@ -17,4 +17,5 @@ transactionRouter.get("/", authMiddleware, fetchAllTransactions);
 
 //Update transaction
 transactionRouter.get("/me", authMiddleware, addId, fetchUserTransactions);
+
 export default transactionRouter;

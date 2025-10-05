@@ -1,28 +1,32 @@
 import Wallet from "../models/wallet.model";
 import { AppError } from "../middlewares/error.middleware";
 import type mongoose from "mongoose";
+import { ClientSession } from "mongoose";
 /**
- * This service is to fetch/store crypto - NGN rate (dummy rate)
+ * This is the wallet service which handles all the wallet logics
  */
 export class WalletService {
   //This is a function to get the user balance from the wallet
-  static async getBalance(userId: string) {
-    const wallet = (await Wallet.findOne({ userId })) as any;
+  static async getBalance(userId: string, session?: mongoose.ClientSession) {
+    const wallet = (await Wallet.findOne({ userId }).session(session!)) as any;
     if (!wallet) throw new AppError("Wallet not found", 404);
     return wallet.balances;
   }
 
+  //Func to compare balance with update amounts
   static async validateBalance(
     userId: string,
     cryptoType: string,
-    amount: number
+    amount: number,
+    session?: mongoose.ClientSession
   ) {
-    const balances = await this.getBalance(userId);
+    const balances = await this.getBalance(userId, session);
     if (!balances[cryptoType] || balances[cryptoType] < amount) {
       throw new AppError("Insufficient balance", 400);
     }
   }
 
+  //Func to create wallet of new users
   static async createWallet(userId: string) {
     //Validate
     if (!userId) throw new AppError("User id is missing", 400);
@@ -33,6 +37,7 @@ export class WalletService {
     return newWallet;
   }
 
+  //Fetch all wallets
   static async getAllWallet() {
     const wallets = await Wallet.find();
     //Validate
@@ -42,6 +47,7 @@ export class WalletService {
     return wallets;
   }
 
+  //Fetch a user wallet
   static async getUserWallet(userId: string) {
     //Validate
 
