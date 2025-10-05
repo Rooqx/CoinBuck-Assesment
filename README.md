@@ -5,6 +5,7 @@
 This project is an **Express + TypeScript API** for crypto-to-fiat conversions, wallet and transaction management, and secure authentication using JWT-based cookies.  
 It demonstrates modular structure, token-based auth, and atomic wallet transactions built on **MongoDB** and **Mongoose**.
 
+###URL: https://coinbuck-assesment.onrender.com
 ---
 
 ## 🧩 Quick Endpoints Reference
@@ -43,12 +44,12 @@ Supported crypto types are strictly BTC, ETH, and USDT — all must be written i
 
 ### 👥 USER ROUTES
 
-- **GET** `/api/v1/users/` → Get all wallets (protected)
 - **GET** `/api/v1/users/me` → Get the authenticated user’s wallet (protected)
 
 ### 👥 Log ROUTES
 
 - **GET** `/api/v1/logs` → Get application logs ( for simplicity, no auth here, paginated; query params: level, page, limit)
+- **GET** `/api/v1/logs?level=error&page=1&limit=20` → filter logs ( query params: level, page, limit)
 
 ---
 
@@ -65,7 +66,7 @@ Supported crypto types are strictly BTC, ETH, and USDT — all must be written i
 - Falls back to `Authorization: Bearer <token>` header if cookies are not present
 - You can modify it to validate the access token instead for better session control
 
-  **LOG ROUTES**
+  ##  LOGS
 
 Persistent application & audit logs are stored in the logs collection. Use these routes for admin/debugging.
 
@@ -78,7 +79,7 @@ Query params:
 - limit — optional (default 50)
 
 Example request (curl):
-GET "http://localhost:4000/api/v1/logs?level=error&page=1&limit=20"
+GET "https://coinbuck-assesment.onrender.com/api/v1/logs?level=error&page=1&limit=20"
 
 ---
 
