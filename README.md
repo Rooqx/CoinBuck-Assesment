@@ -19,10 +19,20 @@ It demonstrates modular structure, token-based auth, and atomic wallet transacti
 - **POST** `/api/v1/auth/signup` → Create a new user account
 - **POST** `/api/v1/auth/signin` → Login and receive cookies (`accessToken`, `refreshToken`)
 - **POST** `/api/v1/auth/logout` → Logout (currently returns plain message)
-
+  
+🪙 Note:
+When a new user signs up, they automatically receive initial wallet balances:
+10 BTC
+100 ETH
+1000 USDT
+0 NGN
+  
 ### 💸 TRANSACTION ROUTES
 
-- **POST** `/api/v1/transactions/convert` → Convert crypto → fiat (protected)
+⚠️ Note:
+Supported crypto types are strictly BTC, ETH, and USDT — all must be written in uppercase when making requests.
+
+- **POST** `/api/v1/transactions/convert` → Convert crypto → fiat (protected) 
 - **GET** `/api/v1/transactions/` → Get all transactions (protected)
 - **GET** `/api/v1/transactions/me` → Get transactions for the logged-in user (protected)
 
