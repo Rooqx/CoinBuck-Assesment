@@ -19,20 +19,20 @@ It demonstrates modular structure, token-based auth, and atomic wallet transacti
 - **POST** `/api/v1/auth/signup` → Create a new user account
 - **POST** `/api/v1/auth/signin` → Login and receive cookies (`accessToken`, `refreshToken`)
 - **POST** `/api/v1/auth/logout` → Logout (currently returns plain message)
-  
+
 🪙 Note:
 When a new user signs up, they automatically receive initial wallet balances:
 10 BTC
 100 ETH
 1000 USDT
 0 NGN
-  
+
 ### 💸 TRANSACTION ROUTES
 
 ⚠️ Note:
 Supported crypto types are strictly BTC, ETH, and USDT — all must be written in uppercase when making requests.
 
-- **POST** `/api/v1/transactions/convert` → Convert crypto → fiat (protected) 
+- **POST** `/api/v1/transactions/convert` → Convert crypto → fiat (protected)
 - **GET** `/api/v1/transactions/` → Get all transactions (protected)
 - **GET** `/api/v1/transactions/me` → Get transactions for the logged-in user (protected)
 
@@ -45,6 +45,10 @@ Supported crypto types are strictly BTC, ETH, and USDT — all must be written i
 
 - **GET** `/api/v1/users/` → Get all wallets (protected)
 - **GET** `/api/v1/users/me` → Get the authenticated user’s wallet (protected)
+
+### 👥 Log ROUTES
+
+- **GET** `/api/v1/logs` → Get application logs ( for simplicity, no auth here, paginated; query params: level, page, limit)
 
 ---
 
@@ -60,6 +64,21 @@ Supported crypto types are strictly BTC, ETH, and USDT — all must be written i
 - Verifies the `refreshToken` by default using `REFRESH_TOKEN_SECRET`
 - Falls back to `Authorization: Bearer <token>` header if cookies are not present
 - You can modify it to validate the access token instead for better session control
+
+  **LOG ROUTES**
+
+Persistent application & audit logs are stored in the logs collection. Use these routes for admin/debugging.
+
+GET /api/v1/logs → Get paginated logs (protected — recommended for admin) but currently no admin auth
+GET /api/v1/logs?level=error&page=1&limit=20
+
+Query params:
+- level — optional (info, warn, error) — filters by log level
+- page — optional (default 1)
+- limit — optional (default 50)
+
+Example request (curl):
+GET "http://localhost:4000/api/v1/logs?level=error&page=1&limit=20"
 
 ---
 
@@ -102,7 +121,6 @@ Supported crypto types are strictly BTC, ETH, and USDT — all must be written i
   {
     "amount": 0.001,
     "cryptoType": "BTC"
-    "bank": "UBA"
   }
   ```
 - **Auth Required:** Yes (via cookies or `Authorization` header)
@@ -128,6 +146,12 @@ Supported crypto types are strictly BTC, ETH, and USDT — all must be written i
 
 - **GET** `http://localhost:4000/api/v1/wallets/me`
 - **Auth Required:** Yes
+
+#### 8️⃣ **Get logs**
+
+- **GET** `http://localhost:4000/api/v1/logs/`
+- **GET** `http://localhost:4000/api/v1/logs?level=error&page=1&limit=20`
+- **Auth Required:** Yes but basic no need for admin
 
 ---
 
