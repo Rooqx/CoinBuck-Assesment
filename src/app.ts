@@ -15,6 +15,7 @@ import walletRouter from "./routers/wallet.routes";
 import authRouter from "./routers/auth.router";
 import userRouter from "./routers/user.router";
 import arcjetMiddleware from "./middlewares/arcject.middleware";
+import logRouter from "./routers/logs.router";
 const app = express();
 
 app.use(express.json());
@@ -28,6 +29,7 @@ app.use("/api/v1/transactions", transactionRouter);
 app.use("/api/v1/wallets", walletRouter);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/logs", logRouter);
 
 //Global express server
 app.use(errorHandler);
