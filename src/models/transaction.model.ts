@@ -15,6 +15,7 @@ const transactionSchema = new mongoose.Schema(
     transactionId: { type: String, unique: true, required: true }, // UUID or nanoid
     cryptoType: { type: String, enum: ["BTC", "ETH", "USDT"], required: true },
     amountInCrypto: { type: Number, required: true },
+    conversionRate: { type: Number, required: true },
     amountInNaira: { type: Number, required: true },
     currencyFormat: { type: String, required: true },
     status: {

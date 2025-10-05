@@ -7,6 +7,7 @@ import User from "../models/user.model";
 import { logger } from "../utils/logger";
 import { WalletService } from "./wallet.service";
 import mongoose from "mongoose";
+import { getExchangeRate } from "../utils/mockExchangeRate";
 
 /**
  * This service is to handle conversion, transaction creation, update balances.
@@ -32,6 +33,8 @@ export class TransactionService {
     //  Calculate conversion and prepare data
     const nairaAmount = await calculateRate(amount, cryptoType);
 
+    const conversionRate = await getExchangeRate(cryptoType);
+
     const format = formatCurrency(nairaAmount); //Format teh amount some like ₦7,500.00
 
     const transactionId = generateTransactionId(); // Generate a unique id for the transaction
@@ -44,6 +47,7 @@ export class TransactionService {
       cryptoType,
       amountInCrypto: amount,
       currencyFormat: format,
+      conversionRate: conversionRate,
       amountInNaira: nairaAmount,
       status: "PENDING", //Eventually gets updated to either SUCCESS OR FAILED
     });
@@ -52,13 +56,12 @@ export class TransactionService {
     }
     //log transaction
     logger.info("New Transaction Processing", {
-      id: transaction._id,
       userId: userId,
       transactionId: transactionId,
       cryptoType: cryptoType,
       amountInCrypto: amount,
       currencyFormat: format,
-      amountInNaira: nairaAmount,
+      conversionRate: conversionRate,
       status: "PENDING",
     });
     //  Start a session for wallet balance updates
