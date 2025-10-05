@@ -102,6 +102,7 @@ Supported crypto types are strictly BTC, ETH, and USDT — all must be written i
   {
     "amount": 0.001,
     "cryptoType": "BTC"
+    "bank": "UBA"
   }
   ```
 - **Auth Required:** Yes (via cookies or `Authorization` header)
