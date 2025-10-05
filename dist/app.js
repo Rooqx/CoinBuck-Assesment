@@ -14,6 +14,7 @@ const wallet_routes_1 = __importDefault(require("./routers/wallet.routes"));
 const auth_router_1 = __importDefault(require("./routers/auth.router"));
 const user_router_1 = __importDefault(require("./routers/user.router"));
 const arcject_middleware_1 = __importDefault(require("./middlewares/arcject.middleware"));
+const logs_router_1 = __importDefault(require("./routers/logs.router"));
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use((0, cookie_parser_1.default)());
@@ -25,6 +26,7 @@ app.use("/api/v1/transactions", transaction_router_1.default);
 app.use("/api/v1/wallets", wallet_routes_1.default);
 app.use("/api/v1/auth", auth_router_1.default);
 app.use("/api/v1/users", user_router_1.default);
+app.use("/api/v1/logs", logs_router_1.default);
 //Global express server
 app.use(error_middleware_1.errorHandler);
 app.get("/", (_req, res) => {
@@ -32,7 +34,7 @@ app.get("/", (_req, res) => {
 });
 console.log(env_config_1.MONGO_URI);
 app.listen(env_config_1.PORT, async () => {
-    console.log(`✅ Server running at http://localhost:${env_config_1.PORT}`);
+    console.log(`✅Server running at http://localhost:${env_config_1.PORT}`);
     await (0, mongo_1.connectToMongo)();
     //await connectToRedis();
     console.log(`Environment:${env_config_1.ENV}`);

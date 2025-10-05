@@ -6,14 +6,10 @@ const transaction_service_1 = require("../services/transaction.service");
 const responseHelper_1 = require("../utils/responseHelper");
 const newTransaction = new transaction_service_1.TransactionService();
 exports.conversion = (0, error_middleware_1.asyncHandler)(async (req, res, next) => {
-    const { amount, cryptoType } = req.body;
+    const { amount, cryptoType, bank } = req.body;
     const userId = req.user.sub;
-    // 1. Validate input
-    if (!amount || !cryptoType) {
-        throw new error_middleware_1.AppError("Missing required fields: amount, cryptoType", 400);
-    }
     //  use the transaction service
-    const transaction = await newTransaction.convertToNaira(userId, Number(amount), cryptoType);
+    const transaction = await newTransaction.convertToNaira(userId, Number(amount), cryptoType, bank);
     //Return response
     return responseHelper_1.ResponseHelper.created(res, transaction, "Transaction Created");
 });

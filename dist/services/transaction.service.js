@@ -13,15 +13,29 @@ const user_model_1 = __importDefault(require("../models/user.model"));
 const logger_1 = require("../utils/logger");
 const wallet_service_1 = require("./wallet.service");
 const mongoose_1 = __importDefault(require("mongoose"));
+const mockExchangeRate_1 = require("../utils/mockExchangeRate");
 /**
  * This service is to handle conversion, transaction creation, update balances.
  */
 class TransactionService {
+    sanitizer(transaction) {
+        if (!transaction)
+            return null;
+        const obj = transaction.toObject
+            ? transaction.toObject()
+            : { ...transaction };
+        delete obj.password;
+        delete obj._id;
+        delete obj.__v;
+        delete obj.createdAt;
+        delete obj.updatedAt;
+        return obj;
+    }
     //Convert to naira logic
-    async convertToNaira(userId, amount, cryptoType) {
+    async convertToNaira(userId, amount, cryptoType, bank) {
         //  Basic input validation
-        if (!amount || !cryptoType)
-            throw new error_middleware_1.AppError("Missing required fields: amount, cryptoType", 400);
+        if (!amount || !cryptoType || !bank)
+            throw new error_middleware_1.AppError("Missing required fields: amount, cryptoType, bank", 400);
         if (amount <= 0)
             throw new error_middleware_1.AppError("Amount must be greater than 0", 400);
         //  Check if crypto type is supported
@@ -30,17 +44,33 @@ class TransactionService {
             throw new error_middleware_1.AppError(`Unsupported crypto type: ${cryptoType}`, 400);
         //  Calculate conversion and prepare data
         const nairaAmount = await (0, rateCalculator_1.calculateRate)(amount, cryptoType);
-        const format = (0, currencyFormatter_1.formatCurrency)(nairaAmount);
-        const transactionId = (0, generateTransactionId_1.generateTransactionId)();
+        const conversionRate = await (0, mockExchangeRate_1.getExchangeRate)(cryptoType);
+        const format = (0, currencyFormatter_1.formatCurrency)(nairaAmount); //Format teh amount some like ₦7,500.00
+        const transactionId = (0, generateTransactionId_1.generateTransactionId)(); // Generate a unique id for the transaction
         //  Create transaction first (outside session)
         // This ensures we always have a record even if something fails later
         const transaction = await transaction_model_1.default.create({
+            status: "PENDING", //Eventually gets updated to either SUCCESS OR FAILED
             userId,
             transactionId,
             cryptoType,
             amountInCrypto: amount,
             currencyFormat: format,
+            conversionRate: conversionRate,
+            recipientBank: bank,
             amountInNaira: nairaAmount,
+        });
+        if (!transaction) {
+            throw new error_middleware_1.AppError("Failed to create transaction", 500);
+        }
+        //log transaction
+        logger_1.logger.info("New Transaction Processing", {
+            userId: userId,
+            transactionId: transactionId,
+            cryptoType: cryptoType,
+            amountInCrypto: amount,
+            currencyFormat: format,
+            conversionRate: conversionRate,
             status: "PENDING",
         });
         //  Start a session for wallet balance updates
@@ -59,16 +89,20 @@ class TransactionService {
             await session.commitTransaction();
             //  Log success
             logger_1.logger.info("Transaction processed successfully", {
-                cryptoType,
+                id: transaction._id,
+                userId: userId,
+                transactionId: transactionId,
+                cryptoType: cryptoType,
                 amountInCrypto: amount,
                 currencyFormat: format,
                 amountInNaira: nairaAmount,
             });
+            const safeTransaction = this.sanitizer(transaction);
             //  Return response
             return {
                 success: true,
                 message: "Transaction processed successfully",
-                transaction,
+                safeTransaction,
             };
         }
         catch (err) {
@@ -81,16 +115,20 @@ class TransactionService {
             //  Log the failed transaction
             logger_1.logger.error("Transaction failed", {
                 error: err.message,
-                cryptoType,
+                id: transaction._id,
+                userId: userId,
+                transactionId: transactionId,
+                cryptoType: cryptoType,
                 amountInCrypto: amount,
                 currencyFormat: format,
                 amountInNaira: nairaAmount,
             });
+            const safeTransaction = this.sanitizer(transaction);
             //  Return failure response but still include the transaction record
             return {
                 success: false,
                 message: err.message,
-                transaction,
+                safeTransaction,
             };
         }
         finally {
