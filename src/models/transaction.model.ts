@@ -16,6 +16,7 @@ const transactionSchema = new mongoose.Schema(
     cryptoType: { type: String, enum: ["BTC", "ETH", "USDT"], required: true },
     amountInCrypto: { type: Number, required: true },
     conversionRate: { type: Number, required: true },
+    recipientBank: { type: String, required: true },
     amountInNaira: { type: Number, required: true },
     currencyFormat: { type: String, required: true },
     status: {

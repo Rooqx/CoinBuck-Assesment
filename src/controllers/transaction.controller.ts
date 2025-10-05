@@ -8,19 +8,15 @@ const newTransaction = new TransactionService();
 
 export const conversion = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { amount, cryptoType } = req.body;
+    const { amount, cryptoType, bank } = req.body;
     const userId = req.user.sub;
-
-    // 1. Validate input
-    if (!amount || !cryptoType) {
-      throw new AppError("Missing required fields: amount, cryptoType", 400);
-    }
 
     //  use the transaction service
     const transaction = await newTransaction.convertToNaira(
       userId,
       Number(amount),
-      cryptoType
+      cryptoType,
+      bank
     );
     //Return response
     return ResponseHelper.created(res, transaction, "Transaction Created");

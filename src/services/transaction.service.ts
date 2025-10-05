@@ -14,15 +14,31 @@ import { getExchangeRate } from "../utils/mockExchangeRate";
  */
 
 export class TransactionService {
+  private sanitizer(transaction: any) {
+    if (!transaction) return null;
+    const obj = transaction.toObject
+      ? transaction.toObject()
+      : { ...transaction };
+    delete obj.password;
+    delete obj._id;
+    delete obj.__v;
+    delete obj.createdAt;
+    delete obj.updatedAt;
+    return obj;
+  }
   //Convert to naira logic
   public async convertToNaira(
     userId: string,
     amount: number,
-    cryptoType: string
+    cryptoType: string,
+    bank: string
   ) {
     //  Basic input validation
-    if (!amount || !cryptoType)
-      throw new AppError("Missing required fields: amount, cryptoType", 400);
+    if (!amount || !cryptoType || !bank)
+      throw new AppError(
+        "Missing required fields: amount, cryptoType, bank",
+        400
+      );
     if (amount <= 0) throw new AppError("Amount must be greater than 0", 400);
 
     //  Check if crypto type is supported
@@ -42,14 +58,15 @@ export class TransactionService {
     //  Create transaction first (outside session)
     // This ensures we always have a record even if something fails later
     const transaction = await Transaction.create({
+      status: "PENDING", //Eventually gets updated to either SUCCESS OR FAILED
       userId,
       transactionId,
       cryptoType,
       amountInCrypto: amount,
       currencyFormat: format,
       conversionRate: conversionRate,
+      recipientBank: bank,
       amountInNaira: nairaAmount,
-      status: "PENDING", //Eventually gets updated to either SUCCESS OR FAILED
     });
     if (!transaction) {
       throw new AppError("Failed to create transaction", 500);
@@ -94,11 +111,12 @@ export class TransactionService {
         amountInNaira: nairaAmount,
       });
 
+      const safeTransaction = this.sanitizer(transaction);
       //  Return response
       return {
         success: true,
         message: "Transaction processed successfully",
-        transaction,
+        safeTransaction,
       };
     } catch (err: any) {
       //  abort the transaction on error
@@ -121,11 +139,13 @@ export class TransactionService {
         amountInNaira: nairaAmount,
       });
 
+      const safeTransaction = this.sanitizer(transaction);
+
       //  Return failure response but still include the transaction record
       return {
         success: false,
         message: err.message,
-        transaction,
+        safeTransaction,
       };
     } finally {
       // 💡 Step 13: Always end the session
