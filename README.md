@@ -2,7 +2,7 @@
 
 ### 🚀 Overview
 
-This project is an **Express + TypeScript API** for crypto-to-fiat conversions, wallet and transaction management, and secure authentication using JWT-based cookies.  
+This project is an **Express + TypeScript API** for crypto-to-fiat conversions, wallet and transaction management, and secure authentication using JWT-based cookie.  
 It demonstrates modular structure, token-based auth, and atomic wallet transactions built on **MongoDB** and **Mongoose**.
 
 ###URL: https://coinbuck-assesment.onrender.com
@@ -87,7 +87,7 @@ GET "https://coinbuck-assesment.onrender.com/api/v1/logs?level=error&page=1&limi
 
 #### 1️⃣ **Signup**
 
-- **POST** `http://localhost:4000/api/v1/auth/signup`
+- **POST** `https://coinbuck-assesment.onrender.com/api/v1/auth/signup`
 - **Body:**
   ```json
   {
@@ -98,7 +98,7 @@ GET "https://coinbuck-assesment.onrender.com/api/v1/logs?level=error&page=1&limi
 
 #### 2️⃣ **Signin**
 
-- **POST** `http://localhost:4000/api/v1/auth/signin`
+- **POST** `https://coinbuck-assesment.onrender.com/api/v1/auth/signin`
 - **Body:**
   ```json
   {
@@ -109,14 +109,14 @@ GET "https://coinbuck-assesment.onrender.com/api/v1/logs?level=error&page=1&limi
 
 #### 3️⃣ **Logout**
 
-- **POST** `http://localhost:4000/api/v1/auth/logout`
+- **POST** `https://coinbuck-assesment.onrender.com/api/v1/auth/logout`
 - **Description:** Ends session (currently returns a plain message, does not yet clear cookies)
 
 ---
 
 #### 4️⃣ **Convert Crypto → Fiat**
 
-- **POST** `http://localhost:4000/api/v1/transactions/convert`
+- **POST** `https://coinbuck-assesment.onrender.com/api/v1/transactions/convert`
 - **Body:**
   ```json
   {
@@ -129,30 +129,30 @@ GET "https://coinbuck-assesment.onrender.com/api/v1/logs?level=error&page=1&limi
 
 #### 5️⃣ **Get All Transactions**
 
-- **GET** `http://localhost:4000/api/v1/transactions/`
+- **GET** `https://coinbuck-assesment.onrender.com/api/v1/transactions`
 - **Auth Required:** Yes
 
 #### 6️⃣ **Get My Transactions**
 
-- **GET** `http://localhost:4000/api/v1/transactions/me`
+- **GET** `https://coinbuck-assesment.onrender.com/api/v1/transactions/me`
 - **Auth Required:** Yes
 
 ---
 
 #### 7️⃣ **Get All Wallets**
 
-- **GET** `http://localhost:4000/api/v1/wallets/`
+- **GET** `https://coinbuck-assesment.onrender.com/api/v1/wallets/`
 - **Auth Required:** Yes
 
 #### 8️⃣ **Get My Wallet**
 
-- **GET** `http://localhost:4000/api/v1/wallets/me`
+- **GET** `https://coinbuck-assesment.onrender.com/api/v1/wallets/me`
 - **Auth Required:** Yes
 
 #### 8️⃣ **Get logs**
 
-- **GET** `http://localhost:4000/api/v1/logs/`
-- **GET** `http://localhost:4000/api/v1/logs?level=error&page=1&limit=20`
+- **GET** `https://coinbuck-assesment.onrender.com/api/v1/logs/`
+- **GET** `https://coinbuck-assesment.onrender.com/api/v1/logs?level=error&page=1&limit=20`
 - **Auth Required:** Yes but basic no need for admin
 
 ---
