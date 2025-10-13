@@ -31,13 +31,13 @@ app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/logs", logRouter);
 
-//Global express server
+//Global error handler
 app.use(errorHandler);
 
 app.get("/", (_req, res) => {
   res.send("Hello from Server (Express + TS) 👋");
 });
-console.log(MONGO_URI);
+//console.log(MONGO_URI);
 
 app.listen(PORT, async () => {
   console.log(`✅Server running at http://localhost:${PORT}`);
